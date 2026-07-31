@@ -1,8 +1,6 @@
 package com.grazyarcadeback.controller;
 
-import com.grazyarcadeback.dto.BombMessage;
-import com.grazyarcadeback.dto.MoveMessage;
-import com.grazyarcadeback.dto.ChatMessage;
+import com.grazyarcadeback.dto.*;
 import com.grazyarcadeback.service.RoomService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
@@ -61,5 +59,19 @@ public class GameController {
   public String broadcastStart(@DestinationVariable String roomId) {
     roomService.startGame(roomId); // 서버 방 상태를 '게임 중'으로 변경 (중도 난입 차단)
     return "START"; // 같은 방 유저들에게 시작하라고 방송
+  }
+
+  // 플레이어 상태(갇힘, 죽음, 구출) 변경 중계
+  @MessageMapping("/room/{roomId}/state")
+  @SendTo("/topic/room/{roomId}/state")
+  public PlayerStateMessage broadcastState(@DestinationVariable String roomId, PlayerStateMessage message) {
+    return message;
+  }
+
+  // 방장 위임 및 레디 상태를 공유하는 통신망
+  @MessageMapping("/room/{roomId}/lobby")
+  @SendTo("/topic/room/{roomId}/lobby")
+  public LobbyEventMessage broadcastLobby(@DestinationVariable String roomId, LobbyEventMessage message) {
+    return message;
   }
 }

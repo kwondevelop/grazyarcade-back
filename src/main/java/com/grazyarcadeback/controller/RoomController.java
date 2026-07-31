@@ -1,29 +1,33 @@
 package com.grazyarcadeback.controller;
 
-import com.grazyarcadeback.domain.game.Room;
-import com.grazyarcadeback.service.RoomService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/rooms")
-@CrossOrigin(origins = "*") // 프론트엔드(Vue)에서 오는 요청 허용
-@RequiredArgsConstructor
 public class RoomController {
 
-  private final RoomService roomService;
+  // DB 대신 메모리에 방 목록 임시 저장
+  private static final Map<String, Map<String, Object>> rooms = new HashMap<>();
 
-  // 방 목록 조회 (GET /api/rooms)
   @GetMapping
-  public List<Room> getRooms() {
-    return roomService.findAllRooms();
+  public Collection<Map<String, Object>> getRooms() {
+    return rooms.values();
   }
 
-  // 방 생성 (POST /api/rooms?name=방제목)
   @PostMapping
-  public Room createRoom(@RequestParam String name) {
-    return roomService.createRoom(name);
+  public Map<String, Object> createRoom(@RequestBody Map<String, String> request) {
+    String title = request.get("title");
+    String host = request.get("host");
+    String roomId = UUID.randomUUID().toString().substring(0, 8); // 랜덤 방 번호
+
+    Map<String, Object> room = new HashMap<>();
+    room.put("roomId", roomId);
+    room.put("title", title);
+    room.put("host", host);
+    room.put("status", "WAITING");
+
+    rooms.put(roomId, room);
+    return room;
   }
 }

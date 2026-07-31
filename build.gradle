@@ -29,6 +29,10 @@ dependencies {
     // (선택) 데이터를 주고받을 때 코드를 간결하게 해주는 Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // JPA 및 MySQL 연결
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    runtimeOnly 'com.mysql:mysql-connector-j'
 }
 
 tasks.named('test') {
